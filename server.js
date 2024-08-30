@@ -2,15 +2,20 @@ const express = require("express");
 const app = express();
 const Blog = require("./models/blog");
 const database = require("./database");
-const body_parserc = require("body-parser");
+const body_parser = require("body-parser");
 app.use(body_parser.json());
 
 //getting the blog data
+
+app.get("/", function (req, res) {
+  res.send("This is the first page of the backend system");
+});
 app.get("/getblog", async (req, res) => {
   try {
     const blog_data = await Blog.find();
-    res.status(200).response(blog_data);
+    res.status(200).json(blog_data);
   } catch (error) {
+    console.log("Error Occured ", error)
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -23,17 +28,19 @@ app.post("/addpost", async function (req, res) {
     const response = await new_blog.save();
     res.status(200).json(response);
   } catch (error) {
+    
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 //getting the blog data by using the blog id
-app.get("/addpost:id", async function (req, res) {
+app.get("/getblog:id", async function (req, res) {
   try {
     const blog = req.params.id;
     const data = await Blog.findById(blog);
     res.status(200).json(data);
   } catch (error) {
+    console.log("Error Occured ", error)
     res.status(500).json({ error: "Internal Server error" });
   }
 });
@@ -60,7 +67,7 @@ app.delete("/deleteblog", async function (req, res) {
 });
 
 app.delete("/delete:id", async function (req, res) {
-  try { 
+  try {
     const id = req.params.id;
     const blog = await Blog.findByIdAndDelete(id);
     res.status(200).json({ message: "Blog Successfully deleted" });
